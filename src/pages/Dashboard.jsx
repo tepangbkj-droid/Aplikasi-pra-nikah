@@ -1,25 +1,24 @@
 import { Wallet, ListChecks, ReceiptText } from "lucide-react";
+import { useAppContext } from "../context/AppContext";
+import { formatIDR } from "../utils/formatCurrency";
 import SavingsProgressCard from "../components/dashboard/SavingsProgressCard";
 import StatCard from "../components/dashboard/StatCard";
 import GoldPriceWidget from "../components/dashboard/GoldPriceWidget";
 import ProgressBar from "../components/ui/ProgressBar";
 
-// TODO: ganti dengan data dari Firestore (useFirestore hook) setelah modul
-// terkait selesai. Untuk sekarang pakai nilai contoh agar layout bisa dicek.
-const MOCK_SUMMARY = {
-  currentSavings: 42_500_000,
-  targetSavings: 120_000_000,
-  totalExpenses: 8_750_000,
-  daysLeft: 214,
-  checklistDone: 11,
-  checklistTotal: 28,
-};
-
 export default function Dashboard() {
-  const { currentSavings, targetSavings, totalExpenses, daysLeft, checklistDone, checklistTotal } =
-    MOCK_SUMMARY;
+  const { summary } = useAppContext();
+  const {
+    currentSavings,
+    targetSavings,
+    totalExpenses,
+    availableFunds,
+    daysLeft,
+    checklistDone,
+    checklistTotal,
+  } = summary;
 
-  const checklistPct = (checklistDone / checklistTotal) * 100;
+  const hasChecklist = checklistTotal > 0;
 
   return (
     <div className="space-y-6">
@@ -39,11 +38,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <StatCard
           label="TOTAL PENGELUARAN"
-          value={new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            maximumFractionDigits: 0,
-          }).format(totalExpenses)}
+          value={formatIDR(totalExpenses)}
           caption="Terakumulasi sejak awal persiapan"
           icon={ReceiptText}
           tone="wine"
@@ -51,11 +46,7 @@ export default function Dashboard() {
 
         <StatCard
           label="SISA DANA TERSEDIA"
-          value={new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            maximumFractionDigits: 0,
-          }).format(currentSavings - totalExpenses)}
+          value={formatIDR(availableFunds)}
           caption="Tabungan dikurangi pengeluaran"
           icon={Wallet}
           tone="sage"
@@ -69,9 +60,14 @@ export default function Dashboard() {
             </div>
           </div>
           <p className="font-display text-2xl text-ink">
-            {checklistDone} / {checklistTotal} tugas
+            {hasChecklist ? `${checklistDone} / ${checklistTotal} tugas` : "Belum ada tugas"}
           </p>
-          <ProgressBar value={checklistDone} max={checklistTotal} color="wine" height="h-1.5" />
+          <ProgressBar
+            value={checklistDone}
+            max={hasChecklist ? checklistTotal : 1}
+            color="wine"
+            height="h-1.5"
+          />
         </div>
       </div>
     </div>
