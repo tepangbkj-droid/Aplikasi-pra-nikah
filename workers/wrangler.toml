@@ -1,0 +1,19 @@
+name = "wedding-prep-worker"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Variabel non-rahasia. Ganti sesuai domain frontend kamu (Vercel/Cloudflare Pages/dll)
+# supaya API tidak bisa dipanggil bebas dari domain lain.
+[vars]
+ALLOWED_ORIGIN = "https://your-frontend-domain.pages.dev"
+
+# Kalau nanti sudah punya provider harga emas asli, isi ini
+# (boleh lewat `wrangler secret put GOLD_PRICE_API_URL` kalau URL-nya sensitif)
+# GOLD_PRICE_API_URL = "https://example-provider.com/api/gold"
+
+# --- SECRET, JANGAN taruh di file ini ---
+# Set lewat terminal, bukan di wrangler.toml, supaya tidak ke-commit ke git:
+#
+#   wrangler secret put TELEGRAM_BOT_TOKEN
+#   wrangler secret put TELEGRAM_CHAT_ID
+#   wrangler secret put GOLD_PRICE_API_KEY   (opsional, kalau providernya butuh API key)
